@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QApplication,
     QCheckBox,
     QComboBox,
+
     QHBoxLayout,
     QLabel,
     QMainWindow,
@@ -44,6 +45,7 @@ TRANSLATIONS = {
         "device": "Gerät",
     },
 }
+
 
 
 def load_settings() -> Dict:
@@ -134,6 +136,7 @@ class BatteryWorker(QThread):
         ]
         return airpods
 
+
     async def _get_battery(self) -> Dict[str, Optional[int]]:
         from bleak import BleakScanner
 
@@ -155,6 +158,7 @@ class BatteryWorker(QThread):
                     "right": None if right in (0, 255) else int(right),
                     "case": None if case in (0, 255) else int(case),
                 }
+
         return {}
 
     def run(self) -> None:  # pragma: no cover - involves asyncio event loop
@@ -168,6 +172,7 @@ class BatteryWorker(QThread):
                 self.device_address = devices[0][1]
         except Exception as exc:
             print(f"Initial scan failed: {exc}")
+
 
         while not self.isInterruptionRequested():
             try:
@@ -190,6 +195,7 @@ class MainWindow(QMainWindow):
         self.settings = load_settings()
         self._build_ui()
         self.apply_language(self.settings["language"])
+
         self.apply_theme(self.settings["theme"])
 
         self.worker = BatteryWorker()
@@ -198,6 +204,7 @@ class MainWindow(QMainWindow):
         # apply saved device if present
         if self.settings.get("device"):
             self.worker.set_device(self.settings["device"])
+
         self.worker.start()
 
     def _build_ui(self) -> None:
@@ -218,6 +225,7 @@ class MainWindow(QMainWindow):
 
         battery_layout = QHBoxLayout()
         self._battery_bars: Dict[str, QProgressBar] = {}
+
         for part in ("left", "right", "case"):
             col = QVBoxLayout()
             icon = QLabel()
@@ -230,6 +238,7 @@ class MainWindow(QMainWindow):
             col.addWidget(bar)
             battery_layout.addLayout(col)
             self._battery_bars[part] = bar
+
         layout.addLayout(battery_layout)
 
         self.theme_box = QCheckBox("Dark Mode")
@@ -256,6 +265,7 @@ class MainWindow(QMainWindow):
 
         layout.addStretch()
         self.resize(340, 260)
+
 
     def on_theme_toggle(self, checked: bool) -> None:
         theme = "dark" if checked else "light"
@@ -336,6 +346,7 @@ class MainWindow(QMainWindow):
                 bar.setRange(0, 100)
                 bar.setValue(val)
                 bar.setFormat("%p%")
+
 
     def closeEvent(self, event) -> None:  # pragma: no cover - GUI callback
         self.worker.requestInterruption()

@@ -14,6 +14,7 @@ portable `.exe` kompiliert werden.
 - Fehlerbehandlung, falls keine AirPods gefunden werden
 - Mehrsprachige Oberfläche (Deutsch/Englisch)
 
+
 ## Installation
 
 ```bash
