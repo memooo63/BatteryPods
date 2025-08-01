@@ -6,11 +6,14 @@ portable `.exe` kompiliert werden.
 
 ## Features
 
-- Anzeige des Ladezustands für Left, Right und Case (in %)
+- Fortschrittsbalken für den Ladezustand von Left, Right und Case (in %)
 - Umschaltbarer Dark-/Light-Mode
 - Option für Autostart mit Windows (Registry)
-- Automatisches Speichern von Einstellungen (Theme, Autostart)
+- Gerätauswahl für verbundene AirPods (erstes Gerät wird vorgeschlagen)
+- Automatisches Speichern von Einstellungen (Theme, Autostart, Sprache, Gerät)
 - Fehlerbehandlung, falls keine AirPods gefunden werden
+- Mehrsprachige Oberfläche (Deutsch/Englisch)
+
 
 ## Installation
 
