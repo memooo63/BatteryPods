@@ -10,6 +10,7 @@ from PySide6.QtGui import QColor, QIcon, QPainter, QPalette, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QCheckBox,
+    QComboBox,
     QHBoxLayout,
     QLabel,
     QMainWindow,
@@ -18,7 +19,23 @@ from PySide6.QtWidgets import (
 )
 
 SETTINGS_FILE = Path.home() / ".battery_pods_settings.json"
-DEFAULT_SETTINGS = {"theme": "dark", "autostart": False}
+DEFAULT_SETTINGS = {"theme": "dark", "autostart": False, "language": "en"}
+
+
+TRANSLATIONS = {
+    "en": {
+        "title": "BatteryPods",
+        "dark_mode": "Dark Mode",
+        "autostart": "Autostart with Windows",
+        "language": "Language",
+    },
+    "de": {
+        "title": "BatteryPods",
+        "dark_mode": "Dunkles Design",
+        "autostart": "Autostart mit Windows",
+        "language": "Sprache",
+    },
+}
 
 
 def load_settings() -> Dict:
@@ -133,6 +150,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.settings = load_settings()
         self._build_ui()
+        self.apply_language(self.settings["language"])
         self.apply_theme(self.settings["theme"])
 
         self.worker = BatteryWorker()
@@ -172,8 +190,20 @@ class MainWindow(QMainWindow):
         self.autostart_box.toggled.connect(self.on_autostart_toggle)
         layout.addWidget(self.autostart_box, alignment=Qt.AlignCenter)
 
+        lang_layout = QHBoxLayout()
+        self.lang_label = QLabel()
+        self.lang_box = QComboBox()
+        self.lang_box.addItem("English", "en")
+        self.lang_box.addItem("Deutsch", "de")
+        current_lang = self.settings.get("language", "en")
+        self.lang_box.setCurrentIndex(0 if current_lang == "en" else 1)
+        self.lang_box.currentIndexChanged.connect(self.on_language_change)
+        lang_layout.addWidget(self.lang_label)
+        lang_layout.addWidget(self.lang_box)
+        layout.addLayout(lang_layout)
+
         layout.addStretch()
-        self.resize(300, 200)
+        self.resize(300, 220)
 
     def on_theme_toggle(self, checked: bool) -> None:
         theme = "dark" if checked else "light"
@@ -185,6 +215,12 @@ class MainWindow(QMainWindow):
         set_autostart(checked)
         self.settings["autostart"] = checked
         save_settings(self.settings)
+
+    def on_language_change(self, index: int) -> None:
+        lang = self.lang_box.itemData(index)
+        self.settings["language"] = lang
+        save_settings(self.settings)
+        self.apply_language(lang)
 
     def apply_theme(self, theme: str) -> None:
         app = QApplication.instance()
@@ -202,6 +238,13 @@ class MainWindow(QMainWindow):
             app.setPalette(palette)
         else:
             app.setPalette(app.style().standardPalette())
+
+    def apply_language(self, language: str) -> None:
+        tr = TRANSLATIONS.get(language, TRANSLATIONS["en"])
+        self.setWindowTitle(tr["title"])
+        self.theme_box.setText(tr["dark_mode"])
+        self.autostart_box.setText(tr["autostart"])
+        self.lang_label.setText(tr["language"])
 
     def update_battery(self, data: Dict[str, Optional[int]]) -> None:
         if not data:

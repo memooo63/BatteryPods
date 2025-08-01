@@ -11,6 +11,7 @@ portable `.exe` kompiliert werden.
 - Option für Autostart mit Windows (Registry)
 - Automatisches Speichern von Einstellungen (Theme, Autostart)
 - Fehlerbehandlung, falls keine AirPods gefunden werden
+- Mehrsprachige Oberfläche (Deutsch/Englisch)
 
 ## Installation
 
